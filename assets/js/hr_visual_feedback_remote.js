@@ -8,31 +8,34 @@ if (typeof jQuery === 'undefined') {
 
     var scriptObject = document.createElement('script');
     var headTag = document.getElementsByTagName('head')[0];
-    scriptObject .type = 'text/javascript';
-    scriptObject .async = true;
-    scriptObject .src = adminurl+'/assets/js/html2canvas.min.js';
-    headTag.appendChild(scriptObject);  }
+    scriptObject.type = 'text/javascript';
+    scriptObject.async = true;
+    scriptObject.src = adminurl+'/assets/js/html2canvas.min.js';
+    headTag.appendChild(scriptObject);
+  }
 
-    var $debug            = false;
-    var $floating_buttons = false;
-    var $allowfeedback    = null;
+  var $debug            = false;
+  var $floating_buttons = false;
+  var $allowfeedback    = null;
 
+  jQuery(document).ready(function() {
+    $ = jQuery;
+    // Add the button to the body
+    $('body').addClass('har_button');
+      $('body').append('<div class="har_button har_feedbackbutton" style="position: fixed; width: 150px; min-height: 50px; line-height: 50px; text-align: center; bottom: 10px; right: 10px; background: #fff; border: 1px solid #ccc;">Feedback</div>');
 
-  // Add the button to the body
-  $('body').addClass('har_button');
-    $('body').append('<div class="har_button har_feedbackbutton" style="position: fixed; width: 150px; min-height: 50px; line-height: 50px; text-align: center; bottom: 10px; right: 10px; background: #fff; border: 1px solid #ccc;">Feedback</div>');
+    // Trigger onclick event;
+    $(document).on('click', '.har_feedbackbutton:not(".har_feedback_active")', function(){
+      $('body').addClass('har_feedback_active');
+      $(this).addClass('har_feedback_active');
+      $('.har_feedbackbutton').html('cancel');
+      $allowfeedback = true;
+    });
 
-  // Trigger onclick event;
-  $(document).on('click', '.har_feedbackbutton:not(".har_feedback_active")', function(){
-    $('body').addClass('har_feedback_active');
-    $(this).addClass('har_feedback_active');
-    $('.har_feedbackbutton').html('cancel');
-    $allowfeedback = true;
-  });
-
-  // Undo the onclick event
-  $(document).on('click', '.har_feedbackbutton.har_feedback_active', function(){
-    har_remove_elements();
+    // Undo the onclick event
+    $(document).on('click', '.har_feedbackbutton.har_feedback_active', function(){
+      har_remove_elements();
+    });
   });
 
   /**
