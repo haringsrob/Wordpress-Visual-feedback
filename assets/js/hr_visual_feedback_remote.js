@@ -124,27 +124,33 @@ if (typeof jQuery === 'undefined') {
    * Send button function
    */
   $(document).on('click', '.har_dom_send', function(event){
-
-    var canvas  = document.getElementById('send_this_canvas');
-    var dataURL = canvas.toDataURL();
-        dataURL = dataURL.replace('data:image/png;base64,','');
-
-        var message = $('#har_feedback_text').val();
-        var subject = $('#har_feedback_title').val();
-        var image   = dataURL;
-        var url   = window.location.pathname;
-
-        var data = {pst_subject: subject, pst_message:message ,pst_image:image, pst_url:url, pst_sideid:siteid};
-
-        $.ajax({
+    var canvas = document.getElementById('send_this_canvas'),
+        dataURL = canvas.toDataURL(),
+        message = $('#har_feedback_text').val(),
+        subject = $('#har_feedback_title').val(),
+        action = 'hrvfb_submit_ticket',
+        url = window.location.pathname;
+    // Update the data url.
+    dataURL = dataURL.replace('data:image/png;base64,','');
+    var image = dataURL;
+    // Set our full post.
+    var data = {
+      action: action,
+      pst_subject: subject,
+      pst_message: message,
+      pst_image: image,
+      pst_url: url,
+      pst_sideid: siteid
+    };
+    // Do the ajax request.
+    $.ajax({
       type: "POST",
-      url: adminurl+'/admin/tickets/add_web_ticket',
+      url: site_post_url,
       data: data,
       success: function(data, textStatus){
         alert(data);
       }
     });
-
   });
 
   /**
@@ -185,7 +191,7 @@ if (typeof jQuery === 'undefined') {
 
           $('.har_canvasobject').css({
             'position': 'fixed',
-            'top': '10px',
+            'top': '50px',
             'left': offsetleft+'px',
             'max-height': '250px',
             'overflow': 'hidden',
@@ -205,9 +211,9 @@ if (typeof jQuery === 'undefined') {
           $('body').append('<div class="har_remove_overlay har_feedback_text"><h2>Leave additional feedback information</h2><h3>Title</h3><input type="text" style="width: 100%" id="har_feedback_title" /><br /><h3>message</h3><textarea style="width: 100%" id="har_feedback_text"></textarea></div>');
 
           if(har_canvas_height<250){
-            var form_offsettop = har_canvas_height+20;
+            var form_offsettop = har_canvas_height+50;
           }else{
-          var form_offsettop = 250+20;
+            var form_offsettop = 250+50;
           }
 
           var form_offsetleft = $('.har_overlay').width()/4;
