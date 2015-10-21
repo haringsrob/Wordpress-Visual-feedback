@@ -5,7 +5,6 @@ if (typeof jQuery === 'undefined') {
 
   if(typeof html2canvas === 'undefined'){
     console.log('html2canvas not loaded. Adding it.');
-
     var scriptObject = document.createElement('script');
     var headTag = document.getElementsByTagName('head')[0];
     scriptObject.type = 'text/javascript';
@@ -14,27 +13,28 @@ if (typeof jQuery === 'undefined') {
     headTag.appendChild(scriptObject);
   }
 
-  var $debug            = false;
-  var $floating_buttons = false;
-  var $allowfeedback    = null;
+  var $debug = false,
+      $floating_buttons = false,
+      $allowfeedback = null;
 
   jQuery(document).ready(function() {
     $ = jQuery;
     // Add the button to the body
-    $('body').addClass('har_button');
-      $('body').append('<div class="har_button har_feedbackbutton" style="position: fixed; width: 150px; min-height: 50px; line-height: 50px; text-align: center; bottom: 10px; right: 10px; background: #fff; border: 1px solid #ccc;">Feedback</div>');
+    $('body').append('<div class="hrvfb_element hrvfb_btn hrvfb_feedbackbutton">Feedback</div>');
 
     // Trigger onclick event;
-    $(document).on('click', '.har_feedbackbutton:not(".har_feedback_active")', function(){
-      $('body').addClass('har_feedback_active');
-      $(this).addClass('har_feedback_active');
-      $('.har_feedbackbutton').html('cancel');
+    $(document).on('click', '.hrvfb_feedbackbutton:not(".hrvfb_feedback_active")', function(){
+      $('body').addClass('hrvfb_feedback_active');
+      $(this).addClass('hrvfb_feedback_active');
+      $('.hrvfb_feedbackbutton').html('cancel');
+      // Add the help message.
+      $('body').append('<div class="hrvfb_help-text hrvfb_element"><div class="hrvfb_element hrvfb_help-text__content">Now you can on something you want to give feedback about.</div></div>');
       $allowfeedback = true;
     });
 
     // Undo the onclick event
-    $(document).on('click', '.har_feedbackbutton.har_feedback_active', function(){
-      har_remove_elements();
+    $(document).on('click', '.hrvfb_feedbackbutton.hrvfb_feedback_active', function(){
+      hrvfb_remove_elements();
     });
   });
 
@@ -47,87 +47,96 @@ if (typeof jQuery === 'undefined') {
     /*
     * Up/down button function
     */
-    if($allowfeedback && $(event.target).hasClass('har_button')){
+    if($allowfeedback && $(event.target).hasClass('hrvfb_element')){
       event.preventDefault();
       //go up the dom
-      if($(event.target).hasClass('har_dom_up')){
-        if($('.har_active_element').parent().length != 0){
-          $('.har_active_element').removeClass('har_active_element').parent().addClass('har_active_element');
+      if($(event.target).hasClass('hrvfb_dom_up')){
+        if($('.hrvfb_active_element').parent().length != 0){
+          $('.hrvfb_active_element').removeClass('hrvfb_active_element').parent().addClass('hrvfb_active_element');
           // Reposition buttons
-          har_reposition_buttons();
+          hrvfb_reposition_buttons();
         }else{
-          har_throw_error($debug, 'This is the first object!');
+          hrvfb_throw_error($debug, 'This is the first object!');
         }
       }
       // go down the dom
-      if($(event.target).hasClass('har_dom_down')){
-        if($('.har_active_element').children().first().length != 0){
-          $('.har_active_element').removeClass('har_active_element').children().first().addClass('har_active_element');
+      if($(event.target).hasClass('hrvfb_dom_down')){
+        if($('.hrvfb_active_element').children().first().length != 0){
+          $('.hrvfb_active_element').removeClass('hrvfb_active_element').children().first().addClass('hrvfb_active_element');
           // Reposition buttons
-          har_reposition_buttons();
+          hrvfb_reposition_buttons();
         }else{
-          har_throw_error($debug, 'This is the last object!');
+          hrvfb_throw_error($debug, 'This is the last object!');
         }
       }
       // go next dom object
-      if($(event.target).hasClass('har_dom_next')){
-        if($('.har_active_element').next().length != 0){
-          $('.har_active_element').removeClass('har_active_element').next().addClass('har_active_element');
+      if($(event.target).hasClass('hrvfb_dom_next')){
+        if($('.hrvfb_active_element').next().length != 0){
+          $('.hrvfb_active_element').removeClass('hrvfb_active_element').next().addClass('hrvfb_active_element');
           // Reposition buttons
-          har_reposition_buttons();
+          hrvfb_reposition_buttons();
         }else{
-          har_throw_error($debug, 'Next object not found');
+          hrvfb_throw_error($debug, 'Next object not found');
         }
       }
       // go previous dom object
-      if($(event.target).hasClass('har_dom_previous')){
-        if($('.har_active_element').prev().length != 0){
-          $('.har_active_element').removeClass('har_active_element').prev().addClass('har_active_element');
+      if($(event.target).hasClass('hrvfb_dom_previous')){
+        if($('.hrvfb_active_element').prev().length != 0){
+          $('.hrvfb_active_element').removeClass('hrvfb_active_element').prev().addClass('hrvfb_active_element');
           // Reposition buttons
-          har_reposition_buttons();
+          hrvfb_reposition_buttons();
         }else{
-          har_throw_error($debug, 'Previous object not found');
+          hrvfb_throw_error($debug, 'Previous object not found');
         }
       }
     }
 
     /*
-    * Set active
+    * Set active.
     */
-    if($allowfeedback && !$(event.target).hasClass('har_button')){
+    if($allowfeedback && !$(event.target).hasClass('hrvfb_element')){
       event.preventDefault();
 
-      // Remove all other element classes
+      // Remove all other element classes.
       remove_all_active();
 
-      // Set clicked item class
-      $(event.target).addClass('har_active_element');
+      // Set clicked item class.
+      $(event.target).addClass('hrvfb_active_element');
 
-      // Add the button to the document
-      if($('.har_dom_actions').length == 0){
-          $('body').append('<div class="har_dom_actions har_button"><a href="#" class="har_button har_dom_up">Up</a><a href="#" class="har_button har_dom_down">down</a><a href="#" class="har_button har_dom_previous">prev</a><a href="#" class="har_button har_dom_next">next</a></div>');
-          $('body').append('<div class="har_dom_ready har_button" style="background: green; color: #fff; font-weight: bold; z-index: 9999; border: 1px solid #ccc; width: 150px; min-height: 50px; line-height: 50px; text-align: center; position: fixed; top: 10px; right: 10px;">Ready</div>');
+      // Add the button to the document.
+      if($('.hrvfb_dom_actions').length == 0){
+        $actionbuttons = '<div class="hrvfb_dom_actions hrvfb_element">';
+        $actionbuttons += '<a href="#" class="hrvfb_element hrvfb_btn hrvfb_dom_up hrvfb_btn">Up</a>';
+        $actionbuttons += '<a href="#" class="hrvfb_element hrvfb_btn hrvfb_dom_down">down</a>';
+        $actionbuttons += '<a href="#" class="hrvfb_element hrvfb_btn hrvfb_dom_previous">prev</a>';
+        $actionbuttons += '<a href="#" class="hrvfb_element hrvfb_btn hrvfb_dom_next">next</a>';
+        $actionbuttons += '</div>';
+        $('body').append($actionbuttons);
+        $('body').append('<div class="hrvfb_dom_ready hrvfb_element hrvfb_btn">Ready</div>');
       }
-      // Set button position
-      har_reposition_buttons();
+      // Help text update.
+      $('.hrvfb_help-text__content').html('Good, Now you can navigate using the buttons on the left.');
+
+      // Set button position.
+      hrvfb_reposition_buttons();
     }
   });
 
   /**
-  * Cancel button click function
+  * Cancel button click function.
   */
-  $(document).on('click', '.har_dom_cancel', function(event){
-    $('.har_remove_overlay').remove();
+  $(document).on('click', '.hrvfb_dom_cancel', function(event){
+    $('.hrvfb_remove_overlay').remove();
   });
 
   /**
    * Send button function
    */
-  $(document).on('click', '.har_dom_send', function(event){
+  $(document).on('click', '.hrvfb_dom_send', function(event){
     var canvas = document.getElementById('send_this_canvas'),
         dataURL = canvas.toDataURL(),
-        message = $('#har_feedback_text').val(),
-        subject = $('#har_feedback_title').val(),
+        message = $('#hrvfb_feedback_text').val(),
+        subject = $('#hrvfb_feedback_title').val(),
         action = 'hrvfb_submit_ticket',
         url = window.location.pathname;
     // Update the data url.
@@ -149,6 +158,7 @@ if (typeof jQuery === 'undefined') {
       data: data,
       success: function(data, textStatus){
         alert(data);
+        hrvfb_remove_elements();
       }
     });
   });
@@ -156,83 +166,76 @@ if (typeof jQuery === 'undefined') {
   /**
   * Ready button click function
   */
-  $(document).on('click', '.har_dom_ready', function(event){
-    if($('.har_active_element').length != 0){
+  $(document).on('click', '.hrvfb_dom_ready', function(event){
+    if($('.hrvfb_active_element').length != 0){
 
-      html2canvas($('.har_active_element'), {
+      html2canvas($('.hrvfb_active_element'), {
         onrendered: function(canvas) {
 
-          har_remove_elements();
+          hrvfb_remove_elements();
 
-          $('body').append('<div class="har_remove_overlay har_dom_send har_button" style="background: green; color: #fff; font-weight: bold; z-index: 9999; border: 1px solid #ccc; width: 150px; min-height: 50px; line-height: 50px; text-align: center; position: fixed; top: 10px; right: 10px;">Send!</div>');
-          $('body').append('<div class="har_remove_overlay har_dom_cancel har_button" style="background: red; color: #fff; font-weight: bold; z-index: 9999; border: 1px solid #ccc; width: 150px; min-height: 50px; line-height: 50px; text-align: center; position: fixed; bottom: 10px; right: 10px;">Cancel!</div>');
+          $('body').append('<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_send hrvfb_element">Send!</div>');
+          $('body').append('<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_cancel hrvfb_element">Cancel!</div>');
 
-          $('body').append('<div class="har_remove_overlay har_overlay har_button"></div>');
+          $('body').append('<div class="hrvfb_remove_overlay hrvfb_overlay hrvfb_element"></div>');
 
-          $('.har_overlay').css({
+          $('.hrvfb_overlay').css({
             'width': document.width+'px',
             'height': document.height+'px',
-            'background': '#fff',
-            'z-index': '9990',
-            'opacity': '0.9'
           });
 
-          $(canvas).addClass('har_remove_overlay har_canvasobject har_button');
+          $('body').addClass('hrvfb__has-overlay')
+
+          $(canvas).addClass('hrvfb_remove_overlay hrvfb_canvasobject hrvfb_element');
           $(canvas).attr('id', 'send_this_canvas');
           $('body').append(canvas);
 
-          var har_canvas_width  = $('.har_canvasobject').width();
-          var har_canvas_height = $('.har_canvasobject').height();
+          var hrvfb_canvas_width  = $('.hrvfb_canvasobject').width();
+          var hrvfb_canvas_height = $('.hrvfb_canvasobject').height();
 
-          var har_overlay_width  = $('.har_overlay').width();
-          var har_overlay_height = $('.har_overlay').height();
+          var hrvfb_overlay_width  = $('.hrvfb_overlay').width();
+          var hrvfb_overlay_height = $('.hrvfb_overlay').height();
 
-          var offsetleft  = (har_overlay_width-har_canvas_width)/2;
+          var offsetleft  = (hrvfb_overlay_width-hrvfb_canvas_width)/2;
 
-          $('.har_canvasobject').css({
-            'position': 'fixed',
-            'top': '50px',
-            'left': offsetleft+'px',
-            'max-height': '250px',
-            'overflow': 'hidden',
-            'z-index': '9999',
-            'background': '#fff',
-            'border': '1px solid #ccc',
-            'text-align': 'center',
-          });
-
-          var har_canvas_newwidth = $('.har_canvasobject').width();
-          var offsetleft  = (har_overlay_width-har_canvas_newwidth)/2;
-
-          $('.har_canvasobject').css({
+          $('.hrvfb_canvasobject').css({
             'left': offsetleft+'px',
           });
 
-          $('body').append('<div class="har_remove_overlay har_feedback_text"><h2>Leave additional feedback information</h2><h3>Title</h3><input type="text" style="width: 100%" id="har_feedback_title" /><br /><h3>message</h3><textarea style="width: 100%" id="har_feedback_text"></textarea></div>');
+          var hrvfb_canvas_newwidth = $('.hrvfb_canvasobject').width();
+          var offsetleft  = (hrvfb_overlay_width-hrvfb_canvas_newwidth)/2;
 
-          if(har_canvas_height<250){
-            var form_offsettop = har_canvas_height+50;
+          $('.hrvfb_canvasobject').css({
+            'left': offsetleft+'px',
+          });
+
+          $overlay  = '<div class="hrvfb_remove_overlay hrvfb_feedback_text">';
+          $overlay += '<h2>Leave additional feedback information</h2>';
+          $overlay += '<h3>Title</h3><input type="text" id="hrvfb_feedback_title" /><br />';
+          $overlay += '<h3>message</h3><textarea id="hrvfb_feedback_text"></textarea>';
+          $overlay += '</div>';
+          $('body').append($overlay);
+
+          if(hrvfb_canvas_height<250){
+            var form_offsettop = hrvfb_canvas_height+50;
           }else{
             var form_offsettop = 250+50;
           }
 
-          var form_offsetleft = $('.har_overlay').width()/4;
-          var form_width = $('.har_overlay').width()/2;
+          var form_offsetleft = $('.hrvfb_overlay').width()/4;
+          var form_width = $('.hrvfb_overlay').width()/2;
 
-          $('.har_feedback_text').css({
-            'position': 'fixed',
+          $('.hrvfb_feedback_text').css({
             'top': form_offsettop+'px',
             'left': form_offsetleft+'px',
             'width': form_width+'px',
-            'min-height': '200px',
-            'z-index': '9999'
           });
 
         }
       });
 
     }else{
-      har_throw_error($debug, 'No element found, cannot complete.');
+      hrvfb_throw_error($debug, 'No element found, cannot complete.');
     }
   });
 
@@ -241,11 +244,13 @@ if (typeof jQuery === 'undefined') {
 /**
  * Remove all har elements.
  */
-function har_remove_elements(){
-  $('body').removeClass('har_feedback_active');
-  $('.har_feedbackbutton.har_feedback_active').removeClass('har_feedback_active');
-  $('.har_feedbackbutton').html('Feedback');
-  $('.har_dom_actions, .har_dom_ready').remove();
+function hrvfb_remove_elements(){
+  $('body').removeClass('hrvfb_feedback_active');
+  $('body').removeClass('hrvfb__has-overlay');
+  $('.hrvfb_feedbackbutton.hrvfb_feedback_active').removeClass('hrvfb_feedback_active');
+  $('.hrvfb_feedbackbutton').html('Feedback');
+  $('.hrvfb_dom_actions, .hrvfb_dom_ready').remove();
+  $('.hrvfb_remove_overlay').remove();
   remove_all_active();
   $allowfeedback = null;
 }
@@ -253,22 +258,18 @@ function har_remove_elements(){
 /**
  * Repositioning function.
  */
-function har_reposition_buttons(){
+function hrvfb_reposition_buttons(){
   if($floating_buttons){
-    var target = $('.har_active_element');
-    var har_position = $(target).position();
-    $('.har_dom_actions').css({
-      'position': 'absolute',
-      'left': har_position.left,
-      'top': har_position.top,
-      'z-index': '99999'
+    var target = $('.hrvfb_active_element');
+    var hrvfb_position = $(target).position();
+    $('.hrvfb_dom_actions').css({
+      'left': hrvfb_position.left,
+      'top': hrvfb_position.top,
     });
   }else{
-    $('.har_dom_actions').css({
-      'position': 'fixed',
+    $('.hrvfb_dom_actions').css({
       'left': '10px',
       'bottom': '10px',
-      'z-index': '99999'
     });
   }
 }
@@ -276,7 +277,7 @@ function har_reposition_buttons(){
 /**
  * Error function.
  */
-function har_throw_error($debug, message){
+function hrvfb_throw_error($debug, message){
   if ($debug) {
     alert(message);
   } else {
@@ -288,7 +289,7 @@ function har_throw_error($debug, message){
  * Remvove all active function.
  */
 function remove_all_active(){
-  $('.har_active_element').each(function() {
-    $(this).removeClass('har_active_element');
+  $('.hrvfb_active_element').each(function() {
+    $(this).removeClass('hrvfb_active_element');
   });
 }
