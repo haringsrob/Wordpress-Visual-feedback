@@ -6,25 +6,11 @@
   text-align: center;
   bottom: 10px;
   right: 10px;
-  background: #fcfcfc;
-  border: 1px solid #ccc;
-}
-
-.hrvfb_feedbackbutton:hover,
-.hrvfb_feedbackbutton:focus {
-  background-color: #27ae60;
-}
-
-.hrvfb_feedbackbutton.hrvfb_feedback_active {
-  border: 1px solid green;
 }
 
 .hrvfb_dom_ready {
-  background: green;
   color: #fff;
   font-weight: bold;
-  z-index: 9999;
-  border: 1px solid #ccc;
   width: 150px;
   min-height: 50px;
   line-height: 50px;
@@ -35,9 +21,8 @@
 }
 
 .hrvfb_overlay {
+  opacity: 0.8;
   background: #fff;
-  z-index: 9990;
-  opacity: 0.9;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -52,15 +37,13 @@ body.hrvfb__has-overlay{
   top: 50px;
   max-height: 250px;
   overflow: hidden;
-  z-index: 9999;
-  background: #fff;
+  background: #000;
   text-align: center;
 }
 
 .hrvfb_feedback_text {
   position: fixed;
   min-height: 200px;
-  z-index: 9999;
 }
 
 .hrvfb_feedback_text input,
@@ -70,10 +53,10 @@ body.hrvfb__has-overlay{
 
 .hrvfb_dom_actions {
   position: fixed;
-  z-index: 99999;
 }
 
 .hrvfb_btn {
+  z-index: 999999;
   cursor: pointer;
   display: block;
   padding: 0;
@@ -82,7 +65,6 @@ body.hrvfb__has-overlay{
 
   border-width: 0;
   outline: none;
-  border-radius: 2px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
 
   background-color: #2ecc71;
@@ -123,7 +105,6 @@ body.hrvfb__has-overlay{
 .hrvfb_btn.hrvfb_dom_cancel {
   background: red;
   font-weight: bold;
-  z-index: 9999;
   width: 150px;
   min-height: 50px;
   line-height: 50px;
@@ -136,7 +117,6 @@ body.hrvfb__has-overlay{
 
 .hrvfb_btn.hrvfb_dom_send {
   font-weight: bold;
-  z-index: 9999;
   width: 150px;
   min-height: 50px;
   line-height: 50px;
@@ -149,14 +129,16 @@ body.hrvfb__has-overlay{
 .hrvfb_help-text {
   width: 100%;
   position: fixed;
-  bottom: 0px;
+  top: 0;
   text-align: center;
+  display: none;
 }
 .hrvfb_help-text .hrvfb_help-text__content{
   background: #2ecc71;
   position: relative;
-  max-width: 500px;
+  max-width: 50%;
   margin: 0 auto;
+  color: #fff;
 }
 
 body.hrvfb_feedback_active {
@@ -169,6 +151,14 @@ body.hrvfb_feedback_active {
   background: #fff;
 }
 
+body.hrvfb__has-overlay > div:not(.hrvfb_element) {
+  -webkit-filter: blur(10px);
+  filter: blur(10px);
+}
+
+
 .hrvfb_active_element {
-  border: 1px dashed orange;
+  position: relative!important;
+  box-shadow: 0 0 0 99999px rgba(0, 0, 0, .8)!important;
+  z-index: 99999!important;
 }

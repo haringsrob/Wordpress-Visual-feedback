@@ -26,24 +26,50 @@ require_once plugin_dir_path(__FILE__) . 'hr_visual_feedback.ajax.php';
  * Generate the script we have to add.
  */
 function hr_visual_feedback_init() {
-  wp_enqueue_style('hr_visual_feedback_style', plugins_url('assets/css/hr_visual_feedback_style.css', __FILE__));
-  // Our script.
-  $custom_script = '<script type="text/javascript">';
-  $custom_script .= 'var scriptObject = document.createElement(\'script\'),';
-  $custom_script .= 'headTag = document.getElementsByTagName(\'head\')[0],';
-  $custom_script .= 'siteid  = "0",';
-  $custom_script .= 'site_post_url  = "' . admin_url('admin-ajax.php') . '",';
-  $custom_script .= 'adminurl = "' . plugins_url('', __FILE__) . '";';
-  $custom_script .= 'scriptObject .type = \'text/javascript\';';
-  $custom_script .= 'scriptObject .async = true;';
-  $custom_script .= 'scriptObject .src = "' . plugins_url('assets/js/hr_visual_feedback_remote.js', __FILE__) . '";';
-  $custom_script .= 'headTag.appendChild(scriptObject);';
-  $custom_script .= '</script>';
-  // To bad we have to echo this..
-  echo $custom_script;
+  // Add jquery.
+  wp_enqueue_script('jquery');
+  // Add the style.
+  wp_enqueue_style(
+    'hr_visual_feedback_style',
+    plugins_url('assets/css/hr_visual_feedback_style.css', __FILE__)
+  );
+  // Add html2canvas.
+  wp_enqueue_script(
+    'hr_visual_feedback_html2canvas',
+    plugins_url('assets/js/html2canvas.min.js', __FILE__)
+  );
+  // Add the remote script.
+  wp_enqueue_script(
+    'hr_visual_feedback_remote',
+    plugins_url('assets/js/hr_visual_feedback_remote.js', __FILE__)
+  );
+
+  // Add our variables.
+  wp_localize_script(
+    'hr_visual_feedback_remote',
+    'hrvfb_wp_data',
+    array(
+      'site_post_url' => admin_url('admin-ajax.php'),
+      // Options.
+      'hrvfb_show_navigator' => 0,
+      // Add real value here.
+      'hrvfb_debug' => 0,
+      // Help text.
+      'hrvfb_help_text_step_1' => 'Now you can on something you want to give feedback about.',
+      'hrvfb_help_text_step_2' => 'Good, Now you can navigate using the buttons on the left.',
+      // Some general strings.
+      'hrvfb_action_up' => __('Up'),
+      'hrvfb_action_down' => __('Down'),
+      'hrvfb_action_prev' => __('Previous'),
+      'hrvfb_action_next' => __('Next'),
+      'hrvfb_action_send' => __('Send'),
+      'hrvfb_action_ready' => __('Ready'),
+      'hrvfb_action_cancel' => __('Cancel'),
+      'hrvfb_action_feedback' => __('Feedback'),
+      'hrvfb_string_message' => __('Add some additional information'),
+    )
+  );
 }
 
-// Add jQuery.
-wp_enqueue_script("jquery");
 // Add the script to the footer, and other frontend actions.
 add_action('wp_footer', 'hr_visual_feedback_init');

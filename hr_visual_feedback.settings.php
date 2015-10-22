@@ -29,13 +29,15 @@ function hr_visual_feedback_options() {
     wp_die(__('You do not have sufficient permissions to access this page.'));
   }
 
+  wp_enqueue_style('hr_visual_feedback_style', plugins_url('assets/css/hr_visual_feedback_admin_style.css', __FILE__));
+
   $form_data = _hr_visual_feedback_get_form_info();
   // If our form is submitted, we parse the data.
   if (form_is_submitted($form_data['fields'])) {
     // Update options.
     ?>
     <div class="updated">
-        <p><strong>Icecat: </strong> <?php _e('Data has been saved.', 'icecat'); ?> </p>
+        <p><strong>HR Visual feedback: </strong> <?php _e('Data has been saved.', 'hrvfb'); ?> </p>
     </div>
     <?php
   }
@@ -44,7 +46,6 @@ function hr_visual_feedback_options() {
   $fields = fields_set_default_values($form_data['fields']);
   // Open the form tag.
   ?>
-  <link href="<?php echo plugin_dir_url(__FILE__); ?>../assets/css/icecatadmin.css" rel="stylesheet">
   <form name="icecat_settings_form" method="post" action="<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>">
     <input type="hidden" name="icecat_hidden" id="icecat_hidden" value="Y" />
     <?php print renderForm($form_data['groups'], $form_data['fields']); ?>
@@ -63,6 +64,10 @@ function _hr_visual_feedback_get_form_info() {
       'title' => 'Basic settings',
     ),
     array(
+      'group' => 'group_debugging',
+      'title' => 'Debugging',
+    ),
+    array(
       'group' => 'actions',
       'title' => '',
     ),
@@ -73,12 +78,22 @@ function _hr_visual_feedback_get_form_info() {
     array(
       'field_group'   => 'group_basic_config',
       'field_title'   => 'Show help text?',
-      'field_name'    => 'hrvfb_show_help_text',
+      'field_name'    => 'hrvfb_setting_show_help_text',
       'field_type'    => 'boolean',
       'field_length'  => 1,
       'field_required' => FALSE,
       'field_default' => 1,
       'field_info'    => 'Show the default help text to the user providing feedback.',
+    ),
+    array(
+      'field_group'   => 'group_debugging',
+      'field_title'   => 'Log debug info to the console',
+      'field_name'    => 'hrvfb_setting_debug',
+      'field_type'    => 'boolean',
+      'field_length'  => 1,
+      'field_required' => FALSE,
+      'field_default' => 0,
+      'field_info'    => 'Enabling this will show the debug information in the console.',
     ),
     array(
       'field_group'   => 'actions',
