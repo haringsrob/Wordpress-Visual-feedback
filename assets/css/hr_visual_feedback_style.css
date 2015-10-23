@@ -180,7 +180,5 @@ html.hrvfb__has-overlay {
 }
 
 .hrvfb_active_element {
-  position: relative!important;
-  box-shadow: 0 0 0 99999px rgba(0, 0, 0, .8)!important;
-  z-index: 99999!important;
+  border: 1px dashed orange;
 }
