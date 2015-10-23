@@ -164,6 +164,7 @@ html.hrvfb__has-overlay {
   width: auto;
   max-height: 100%;
   max-width: 100%;
+  display: initial;
 }
 
 .hrvfb_feedback_text {
