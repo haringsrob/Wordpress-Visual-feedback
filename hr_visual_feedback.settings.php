@@ -11,7 +11,7 @@ add_action('admin_menu', 'hr_visual_feedback_menu');
 // it.
 if (!function_exists('renderForm')) {
   // Load our required file.
-  require_once plugin_dir_path(__FILE__) . 'includeS/adminfunctions.php';
+  require_once plugin_dir_path(__FILE__) . 'includes/adminfunctions.php';
 }
 
 /**
