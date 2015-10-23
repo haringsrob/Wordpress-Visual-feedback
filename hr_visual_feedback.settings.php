@@ -48,7 +48,7 @@ function hr_visual_feedback_options() {
   ?>
   <form name="icecat_settings_form" method="post" action="<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>">
     <input type="hidden" name="icecat_hidden" id="icecat_hidden" value="Y" />
-    <?php print renderForm($form_data['groups'], $form_data['fields']); ?>
+    <?php print renderForm($form_data['groups'], $fields); ?>
   </form>
   <?php
 }

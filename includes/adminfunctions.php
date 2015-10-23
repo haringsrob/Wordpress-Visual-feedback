@@ -122,14 +122,18 @@ function form_is_submitted($fields) {
   // Check if the required post fields are available.
   if (isset($_POST['icecat_hidden']) && $_POST['icecat_hidden'] == "Y") {
     foreach ($fields as $key => $field) {
-      // If our field is in the post.
-      if (isset($_POST[$field['field_name']])) {
-        $value = $_POST[$field['field_name']];
+      if ($field['field_name'] !== 'Submit') {
+        // If our field is in the post.
+        if (isset($_POST[$field['field_name']])) {
+          $value = $_POST[$field['field_name']];
+        }
+        else {
+          $value = 'off';
+        }
+        if (!update_option($field['field_name'], $value) && !get_option($field['field_name'])) {
+          add_option($field['field_name'], $value);
+        }
       }
-      else {
-        $value = 'off';
-      }
-      update_option($field['field_name'], $value);
     }
     return TRUE;
   }
@@ -145,7 +149,7 @@ function fields_set_default_values($fields) {
   // Loop over our fields, and process the data we allready have.
   foreach ($fields as $key => $field) {
     // We dont need to check buttons.
-    if ($field['field_type'] != 'submit') {
+    if ($field['field_type'] !== 'submit') {
       // Check if on/off should be 1/0.
       if (get_option($field['field_name']) == 'on') {
         $value = 1;

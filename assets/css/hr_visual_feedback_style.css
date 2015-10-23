@@ -21,34 +21,17 @@
 }
 
 .hrvfb_overlay {
-  opacity: 0.8;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.8);
   position: absolute;
   top: 0px;
   left: 0px;
 }
 
 body.hrvfb__has-overlay{
-  /* Remove scroll */
-}
-
-.hrvfb_canvasobject {
-  position: fixed;
-  top: 50px;
-  max-height: 250px;
-  overflow: hidden;
-  background: #000;
-  text-align: center;
-}
-
-.hrvfb_feedback_text {
-  position: fixed;
-  min-height: 200px;
-}
-
-.hrvfb_feedback_text input,
-.hrvfb_feedback_text textarea{
+  position:fixed;
+  overflow-y: hidden;
   width: 100%;
+  height: 100%;
 }
 
 .hrvfb_dom_actions {
@@ -156,6 +139,35 @@ body.hrvfb__has-overlay > div:not(.hrvfb_element) {
   filter: blur(10px);
 }
 
+/** Main markup of the overlay elements **/
+.hrvfb_image_wrapper {
+  clear: both;
+  max-height: 250px;
+  text-align: center;
+  float: left;
+  width: 100%;
+  margin: 25px 0px;
+}
+
+.hrvfb_image_element {
+  float: none;
+  width: auto;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.hrvfb_feedback_text {
+  min-height: 200px;
+  max-width: 500px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.hrvfb_feedback_text input,
+.hrvfb_feedback_text textarea{
+  width: 100%;
+  margin: 0 auto;
+}
 
 .hrvfb_active_element {
   position: relative!important;

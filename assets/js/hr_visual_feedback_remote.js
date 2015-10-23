@@ -4,11 +4,13 @@ if (typeof jQuery === 'undefined') {
 } else if (typeof html2canvas !== 'undefined') {
   // Set base config.
   var $floating_buttons = false,
-      $allowfeedback = null;
+      $allowfeedback = null,
+      $dataurl;
   // init jqueyr.
   $ = jQuery;
   // On ready function.
   jQuery(document).ready(function() {
+    console.log($.browser);
     // Add the button to the body
     $('body').append('<div class="hrvfb_element hrvfb_btn hrvfb_feedbackbutton">' + hrvfb_wp_data['hrvfb_action_feedback'] + '</div>');
     // Trigger onclick event;
@@ -117,14 +119,13 @@ if (typeof jQuery === 'undefined') {
   // Send function.
   $(document).on('click', '.hrvfb_dom_send', function(event){
     var canvas = document.getElementById('send_this_canvas'),
-        dataURL = canvas.toDataURL(),
+        dataURL = $dataurl,
         message = $('#hrvfb_feedback_text').val(),
         subject = $('#hrvfb_feedback_title').val(),
         action = 'hrvfb_submit_ticket',
-        url = window.location.pathname;
-    // Update the data url.
-    dataURL = dataURL.replace('data:image/png;base64,','');
-    var image = dataURL;
+        url = window.location.pathname,
+        dataURL = dataURL.replace('data:image/png;base64,',''),
+        image = dataURL;
     // Set our full post.
     var data = {
       action: action,
@@ -139,60 +140,18 @@ if (typeof jQuery === 'undefined') {
       url: hrvfb_wp_data['site_post_url'],
       data: data,
       success: function(data, textStatus){
-        alert(data);
         hrvfb_remove_elements();
+        hrvfb_set_help_text(data);
       }
     });
   });
   // When element is selected.
   $(document).on('click', '.hrvfb_dom_ready', function(event){
     if($('.hrvfb_active_element').length != 0){
-      // Html 2 canvas.
-      html2canvas($('.hrvfb_active_element'), {
-        onrendered: function(canvas) {
-          // Remove all elements.
-          hrvfb_remove_elements();
-          // Render our display.
-          $new_elements = '<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_send hrvfb_element">' + hrvfb_wp_data['hrvfb_action_send'] + '</div>';
-          $new_elements += '<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_cancel hrvfb_element">' + hrvfb_wp_data['hrvfb_action_cancel'] + '</div>';
-          $new_elements += '<div class="hrvfb_remove_overlay hrvfb_overlay hrvfb_element"></div>';
-          $('body').append($new_elements).addClass('hrvfb__has-overlay').append(canvas);
-          $('.hrvfb_overlay').css({
-            'width': document.width+'px',
-            'height': document.height+'px',
-          });
-          $(canvas).addClass('hrvfb_remove_overlay hrvfb_canvasobject hrvfb_element').attr('id', 'send_this_canvas');
-          // calculate some sizes.
-          var hrvfb_canvas_height = $('.hrvfb_canvasobject').height(),
-              hrvfb_overlay_width  = $('.hrvfb_overlay').width(),
-              hrvfb_canvas_newwidth = $('.hrvfb_canvasobject').width(),
-              offsetleft  = (hrvfb_overlay_width-hrvfb_canvas_newwidth)/2;
-          // Position the element.
-          $('.hrvfb_canvasobject').css({
-            'left': offsetleft+'px',
-          });
-          // Render the form.
-          $overlay  = '<div class="hrvfb_remove_overlay hrvfb_element hrvfb_feedback_text">';
-          $overlay += '<h2 class="hrvfb_element">' + hrvfb_wp_data['hrvfb_string_message'] + '</h2>';
-          $overlay += '<textarea id="hrvfb_feedback_text" class="hrvfb_element"></textarea>';
-          $overlay += '</div>';
-          $('body').append($overlay);
-          // Set some data.
-          if(hrvfb_canvas_height<250){
-            var form_offsettop = hrvfb_canvas_height+50;
-          }else{
-            var form_offsettop = 250+50;
-          }
-          var form_offsetleft = $('.hrvfb_overlay').width()/4,
-              form_width = $('.hrvfb_overlay').width()/2;
-          // Reposiition.
-          $('.hrvfb_feedback_text').css({
-            'top': form_offsettop+'px',
-            'left': form_offsetleft+'px',
-            'width': form_width+'px',
-          });
-        }
+      $('.hrvfb_element.hrvfb_btn').fadeOut(100, function () {
+        hrvfb_create_overlay();
       });
+      $('.hrvfb_element.hrvfb_btn').fadeIn();
     }
     else {
       hrvfb_throw_error('No element found, cannot complete.');
@@ -253,4 +212,83 @@ function hrvfb_set_help_text(help_text) {
       $(this).remove();
     });
   }, 5000);
+}
+
+
+function hrvfb_get_cropped_element(div, target, myCallback){
+  console.log('loaded');
+  html2canvas($('body'), {
+    onrendered:function(canvas) {
+      var context = canvas.getContext('2d'),
+          tmpCanvas = document.createElement('canvas'),
+          context2 = canvas.getContext('2d'),
+          imageObj = new Image();
+      tmpCanvas.width = canvas.width;
+      tmpCanvas.height = canvas.height;
+      imageObj.onload = function() {
+        var position = target.offset(),
+            sourceX = position.left,
+            sourceY = position.top,
+            sourceWidth = target.outerWidth(),
+            sourceHeight = target.outerHeight(),
+            destWidth = sourceWidth,
+            destHeight = sourceHeight,
+            destX = canvas.width / 2 - destWidth / 2,
+            destY = canvas.height / 2 - destHeight / 2;
+        context2.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+        var data = context2.getImageData(sourceX, sourceY, sourceWidth, sourceHeight);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = sourceWidth;
+        canvas.height = sourceHeight;
+        context2.putImageData(data,0,0);
+        var data_to_return;
+        data_to_return = {"image":canvas.toDataURL('image/png'), "width":sourceWidth, "height":sourceHeight};
+        myCallback(data_to_return);
+        context.clearRect(0, 0,  sourceWidth, sourceHeight);
+        context2.clearRect(0, 0, sourceWidth, sourceHeight);
+        data = null;
+        tmpCanvas = null;
+        canvas = null;
+        imageObj = null;
+      };
+      imageObj.src = tmpCanvas.toDataURL("image/png");
+    }
+  });
+}
+// Function to create the overlay.
+function hrvfb_create_overlay() {
+  hrvfb_get_cropped_element($('body'), $('.hrvfb_active_element'), function(canvas) {
+    // Remove all elements
+    hrvfb_remove_elements();
+    $dataurl = canvas['image'];
+    // Render our display.
+    $new_elements = '<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_send hrvfb_element">' + hrvfb_wp_data['hrvfb_action_send'] + '</div>';
+    $new_elements += '<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_cancel hrvfb_element">' + hrvfb_wp_data['hrvfb_action_cancel'] + '</div>';
+    $new_elements += '<div class="hrvfb_remove_overlay hrvfb_overlay hrvfb_element"></div>';
+    $('body').append($new_elements).addClass('hrvfb__has-overlay');
+    $('.hrvfb_overlay').css({
+      'width': document.width+'px',
+      'height': document.height+'px',
+    });
+    $image_element = '<div class="hrvfb_element hrvfb_image_wrapper">';
+    $image_element += '<img id="send_this_canvas" class="hrvfb_element hrvfb_remove_overlay hrvfb_image_element" src="' + canvas['image'] + '" ></div>';
+    $('.hrvfb_overlay').append($image_element);
+    // Render the form.
+    $overlay  = '<div class="hrvfb_remove_overlay hrvfb_element hrvfb_feedback_text">';
+    $overlay += '<h2 class="hrvfb_element">' + hrvfb_wp_data['hrvfb_string_message'] + '</h2>';
+    $overlay += '<textarea id="hrvfb_feedback_text" class="hrvfb_element"></textarea>';
+    $overlay += '</div>';
+    $('.hrvfb_overlay').append($overlay);
+    // Call our resize function.
+    hrvfb_resize_overlay();
+  });
+}
+// Function to change overlay size.
+function hrvfb_resize_overlay() {
+  $(window).resize(function() {
+    $('.hrvfb_overlay').css({
+      'width': document.width+'px',
+      'height': document.height+'px',
+    });
+  });
 }

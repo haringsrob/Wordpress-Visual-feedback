@@ -36,7 +36,7 @@ function hr_visual_feedback_init() {
   // Add html2canvas.
   wp_enqueue_script(
     'hr_visual_feedback_html2canvas',
-    plugins_url('assets/js/html2canvas.min.js', __FILE__)
+    plugins_url('assets/js/external/html2canvas.min.js', __FILE__)
   );
   // Add the remote script.
   wp_enqueue_script(

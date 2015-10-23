@@ -31,7 +31,10 @@ function hr_visual_feedback_handle_feedback_request() {
   }
 
   // Add our message after our introduction.
-  $message = 'Feedback: submitted from "' . $url . '"<br />' . $message;
+  $message = $message . '<br /><hr />';
+  $message .= 'Feedback: submitted from "' . $url . '"<br />';
+  // Also add our browser information.
+  $message .= '<br />User Agent:' . print_r($_SERVER['HTTP_USER_AGENT'], TRUE);
 
   // Create the post.
   $post_id = wp_insert_post(
