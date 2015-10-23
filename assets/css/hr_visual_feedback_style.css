@@ -112,9 +112,9 @@ body.hrvfb__has-overlay{
 .hrvfb_help-text {
   width: 100%;
   position: fixed;
-  top: 0;
   text-align: center;
   display: none;
+  z-index: 99999;
 }
 .hrvfb_help-text .hrvfb_help-text__content{
   background: #2ecc71;
@@ -122,6 +122,7 @@ body.hrvfb__has-overlay{
   max-width: 50%;
   margin: 0 auto;
   color: #fff;
+  padding: 5px;
 }
 
 body.hrvfb_feedback_active {
@@ -137,6 +138,15 @@ body.hrvfb_feedback_active {
 body.hrvfb__has-overlay > div:not(.hrvfb_element) {
   -webkit-filter: blur(10px);
   filter: blur(10px);
+}
+
+/** Hide the admin bar **/
+body.hrvfb__has-overlay #wpadminbar{
+  display: none;
+}
+
+html.hrvfb__has-overlay {
+  margin-top: 0!important;
 }
 
 /** Main markup of the overlay elements **/

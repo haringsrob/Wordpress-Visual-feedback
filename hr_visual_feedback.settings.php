@@ -33,7 +33,7 @@ function hr_visual_feedback_options() {
 
   $form_data = _hr_visual_feedback_get_form_info();
   // If our form is submitted, we parse the data.
-  if (form_is_submitted($form_data['fields'])) {
+  if (form_is_submitted($form_data['fields'], 'hrvfb_hidden')) {
     // Update options.
     ?>
     <div class="updated">
@@ -47,7 +47,7 @@ function hr_visual_feedback_options() {
   // Open the form tag.
   ?>
   <form name="icecat_settings_form" method="post" action="<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>">
-    <input type="hidden" name="icecat_hidden" id="icecat_hidden" value="Y" />
+    <input type="hidden" name="hrvfb_hidden" id="hrvfb_hidden" value="Y" />
     <?php print renderForm($form_data['groups'], $fields); ?>
   </form>
   <?php
@@ -84,6 +84,19 @@ function _hr_visual_feedback_get_form_info() {
       'field_required' => FALSE,
       'field_default' => 1,
       'field_info'    => 'Show the default help text to the user providing feedback.',
+    ),
+    array(
+      'field_group'   => 'group_basic_config',
+      'field_title'   => 'Help text position',
+      'field_name'    => 'hrvfb_setting_help_text_position',
+      'field_type'    => 'select',
+      'field_required' => FALSE,
+      'field_default' => 'top',
+      'field_options' => array(
+        'top' => __('Top'),
+        'bottom' => __('Bottom'),
+      ),
+      'field_info'    => 'Where to position the help text',
     ),
     array(
       'field_group'   => 'group_debugging',

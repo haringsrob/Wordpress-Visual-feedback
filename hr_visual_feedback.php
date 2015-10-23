@@ -44,30 +44,40 @@ function hr_visual_feedback_init() {
     plugins_url('assets/js/hr_visual_feedback_remote.js', __FILE__)
   );
 
+  // We need this twice, so inintialize it here.
+  $show_help_text = (get_option('hrvfb_setting_show_help_text', "on") == "on") ? 1 : 0;
+
+  // Build our array.
+  $hrvfb_js_data = array(
+    'site_post_url' => admin_url('admin-ajax.php'),
+    // Options.
+    'hrvfb_show_navigator' => 0,
+    'hrvfb_debug' => 0,
+    'hrvfb_show_help_text' => $show_help_text,
+    'hrvfb_show_help_text_position' => get_option('hrvfb_setting_help_text_position', 'top'),
+    // Some general strings.
+    'hrvfb_action_up' => __('Up'),
+    'hrvfb_action_down' => __('Down'),
+    'hrvfb_action_prev' => __('Previous'),
+    'hrvfb_action_next' => __('Next'),
+    'hrvfb_action_send' => __('Send'),
+    'hrvfb_action_ready' => __('Ready'),
+    'hrvfb_action_cancel' => __('Cancel'),
+    'hrvfb_action_feedback' => __('Feedback'),
+    'hrvfb_string_message' => __('Add some additional information'),
+  );
+
+  // We only want to send this data when it is actually needed.
+  if ($show_help_text == 1) {
+    $hrvfb_js_data['hrvfb_help_text_step_1'] = 'Now you can on something you want to give feedback about.';
+    $hrvfb_js_data['hrvfb_help_text_step_2'] = 'Good, you can still click on something else, or click on ready to continue.';
+  }
+
   // Add our variables.
   wp_localize_script(
     'hr_visual_feedback_remote',
     'hrvfb_wp_data',
-    array(
-      'site_post_url' => admin_url('admin-ajax.php'),
-      // Options.
-      'hrvfb_show_navigator' => 0,
-      // Add real value here.
-      'hrvfb_debug' => 0,
-      // Help text.
-      'hrvfb_help_text_step_1' => 'Now you can on something you want to give feedback about.',
-      'hrvfb_help_text_step_2' => 'Good, Now you can navigate using the buttons on the left.',
-      // Some general strings.
-      'hrvfb_action_up' => __('Up'),
-      'hrvfb_action_down' => __('Down'),
-      'hrvfb_action_prev' => __('Previous'),
-      'hrvfb_action_next' => __('Next'),
-      'hrvfb_action_send' => __('Send'),
-      'hrvfb_action_ready' => __('Ready'),
-      'hrvfb_action_cancel' => __('Cancel'),
-      'hrvfb_action_feedback' => __('Feedback'),
-      'hrvfb_string_message' => __('Add some additional information'),
-    )
+    $hrvfb_js_data
   );
 }
 

@@ -2,6 +2,7 @@ if (typeof jQuery === 'undefined') {
     // jQuery is NOT available
     console.log('could not load hr visual feedback, jquery not available');
 } else if (typeof html2canvas !== 'undefined') {
+  console.log(hrvfb_wp_data);
   // Set base config.
   var $floating_buttons = false,
       $allowfeedback = null,
@@ -19,7 +20,9 @@ if (typeof jQuery === 'undefined') {
       $(this).addClass('hrvfb_feedback_active');
       $('.hrvfb_feedbackbutton').html('cancel');
       // Add the help message.
-      hrvfb_set_help_text(hrvfb_wp_data['hrvfb_help_text_step_1']);
+      if (hrvfb_wp_data['hrvfb_show_help_text'] == 1) {
+        hrvfb_set_help_text(hrvfb_wp_data['hrvfb_help_text_step_1']);
+      }
       // Set our allowfeedback variable to true.
       $allowfeedback = true;
     });
@@ -101,7 +104,9 @@ if (typeof jQuery === 'undefined') {
         $('body').append('<div class="hrvfb_dom_ready hrvfb_element hrvfb_btn">' + hrvfb_wp_data['hrvfb_action_ready'] + '</div>');
       }
       // Help text update.
-      hrvfb_set_help_text(hrvfb_wp_data['hrvfb_help_text_step_2']);
+      if (hrvfb_wp_data['hrvfb_show_help_text'] == 1) {
+        hrvfb_set_help_text(hrvfb_wp_data['hrvfb_help_text_step_2']);
+      }
       // Set button position.
       hrvfb_reposition_buttons();
     }
@@ -164,6 +169,7 @@ else {
 // Helper function to remove elements.
 function hrvfb_remove_elements(){
   $('body').removeClass('hrvfb_feedback_active').removeClass('hrvfb__has-overlay');
+  $('html').removeClass('hrvfb__has-overlay');
   $('.hrvfb_feedbackbutton.hrvfb_feedback_active').removeClass('hrvfb_feedback_active');
   $('.hrvfb_dom_actions, .hrvfb_dom_ready').remove();
   $('.hrvfb_remove_overlay').remove();
@@ -205,7 +211,9 @@ function remove_all_active(){
 }
 // Helper to show help messages.
 function hrvfb_set_help_text(help_text) {
+  $('.hrvfb_help-text').stop();
   $('body').append('<div class="hrvfb_help-text hrvfb_element"><div class="hrvfb_element hrvfb_help-text__content">' + help_text + '</div></div>');
+  $('.hrvfb_help-text').css(hrvfb_wp_data['hrvfb_show_help_text_position'], '0px');
   $('.hrvfb_help-text').fadeIn();
   setTimeout(function() {
     $('.hrvfb_help-text').fadeOut(300, function() {
@@ -213,8 +221,7 @@ function hrvfb_set_help_text(help_text) {
     });
   }, 5000);
 }
-
-
+// Function to get partial image.
 function hrvfb_get_cropped_element(div, target, myCallback){
   console.log('loaded');
   html2canvas($('body'), {
@@ -266,6 +273,7 @@ function hrvfb_create_overlay() {
     $new_elements += '<div class="hrvfb_remove_overlay hrvfb_btn hrvfb_dom_cancel hrvfb_element">' + hrvfb_wp_data['hrvfb_action_cancel'] + '</div>';
     $new_elements += '<div class="hrvfb_remove_overlay hrvfb_overlay hrvfb_element"></div>';
     $('body').append($new_elements).addClass('hrvfb__has-overlay');
+    $('html').addClass('hrvfb__has-overlay');
     $('.hrvfb_overlay').css({
       'width': document.width+'px',
       'height': document.height+'px',
