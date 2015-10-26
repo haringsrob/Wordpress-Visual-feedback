@@ -234,10 +234,10 @@ function hrvfb_get_cropped_element(div, target, myCallback){
       tmpCanvas.height = canvas.height;
       imageObj.onload = function() {
         var position = target.offset(),
-            sourceX = position.left,
-            sourceY = position.top,
-            sourceWidth = target.outerWidth(),
-            sourceHeight = target.outerHeight(),
+            sourceX = position.left-15,
+            sourceY = position.top-15,
+            sourceWidth = target.outerWidth()+30,
+            sourceHeight = target.outerHeight()+30,
             destWidth = sourceWidth,
             destHeight = sourceHeight,
             destX = canvas.width / 2 - destWidth / 2,
