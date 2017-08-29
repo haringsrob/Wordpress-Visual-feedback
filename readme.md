@@ -17,3 +17,5 @@ buttons.
 1. Overview of feedback items.
 2. A button to add feedback.
 3. A configuration button to set some options.
+
+This plugin used to be a commercial one. As I am moving focus to other activities, this is now opensource and free to use.
